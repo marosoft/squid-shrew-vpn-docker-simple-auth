@@ -1,7 +1,7 @@
-squid-docker-simple-auth
+squid-shrew-vpn-docker-simple-auth
 ========================
 
-A simple (and fragile) Dockerfile for launching an authenticated squid proxy.
+A simple (and fragile) Dockerfile for launching an authenticated VPN over squid proxy.
 
 The user must specify authentication credentials via the following environment variables:
 
