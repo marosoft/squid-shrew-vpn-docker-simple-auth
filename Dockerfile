@@ -1,13 +1,18 @@
 FROM ubuntu:14.10
-MAINTAINER Rob Haswell <me@robhaswell.co.uk>
+MAINTAINER Marek Dabrowski <marek@dabrowski.me>
 
 RUN apt-get -qqy update
 RUN apt-get -qqy upgrade
-RUN apt-get -qqy install apache2-utils squid3
+RUN apt-get -qqy install apache2-utils squid3 openssh-server
 
-# If you are prone to gouging your eyes out, do not read the following 2 lines
-RUN sed -i 's@#\tauth_param basic program /usr/lib/squid3/basic_ncsa_auth /usr/etc/passwd@auth_param basic program /usr/lib/squid3/basic_ncsa_auth /usr/etc/passwd\nacl ncsa_users proxy_auth REQUIRED@' /etc/squid3/squid.conf
-RUN sed -i 's@^http_access allow localhost$@\0\nhttp_access allow ncsa_users@' /etc/squid3/squid.conf
+RUN cd /usr/local/src/
+RUN wget https://www.shrew.net/download/ike/ike-2.2.1-release.tbz2
+RUN tar jxpvf ike-2.2.1-release.tbz2 
+RUN cd ike
+RUN apt-get -y install cmake libqt4-core libqt4-dev libqt4-gui libedit-dev libssl-dev checkinstall flex bison
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DQTGUI=YES -DETCDIR=/etc -DNATT=YES /usr/local/src/ike
+checkinstall -y
+RUN mv /etc/iked.conf.sample /etc/iked.conf
 
 RUN mkdir /usr/etc
 
@@ -15,4 +20,5 @@ EXPOSE 3128
 VOLUME /var/log/squid3
 
 ADD init /init
+ADD ike.vpn /etc/ike.vpn
 CMD ["/init"]
